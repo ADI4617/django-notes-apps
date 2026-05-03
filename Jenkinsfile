@@ -5,7 +5,7 @@ pipeline {
         githubPush()
     }
 
-    stages{
+    stages{ 
 
         stage("Code clone"){
             steps{
