@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages{ 
-
+ 
         stage("Code clone"){
             steps{
                 sh "whoami"
