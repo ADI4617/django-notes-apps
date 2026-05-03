@@ -1,22 +1,29 @@
 pipeline {
     agent { label "linux" }
 
-    stages {
+    triggers {
+        githubPush()
+    }
 
-        stage("Checkout") {
-            steps {
-                checkout scm
+    stages{
+
+        stage("Code clone"){
+            steps{
+                sh "whoami"
+                git branch: 'main',
+                    url: 'https://github.com/ADI4617/django-notes-apps.git',
+                    credentialsId: 'git-cred'
             }
         }
 
-        stage("Build") {
-            steps {
+        stage("Code Build"){
+            steps{
                 sh "docker build -t notes-app:latest ."
             }
         }
 
-        stage("Push to DockerHub") {
-            steps {
+        stage("Push to DockerHub"){
+            steps{
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerHubCred',
                     usernameVariable: 'DOCKER_USER',
@@ -31,8 +38,8 @@ pipeline {
             }
         }
 
-        stage("Deploy") {
-            steps {
+        stage("Deploy"){
+            steps{
                 sh "docker-compose up -d --build"
             }
         }
