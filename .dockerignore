@@ -1,0 +1,6 @@
+data/
+mysql/
+db/
+*.log
+.env
+__pycache__/
