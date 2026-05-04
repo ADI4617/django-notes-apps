@@ -1,3 +1,5 @@
+@Library("Shared") _
+
 pipeline {
     agent { label "linux" }
 
@@ -7,33 +9,37 @@ pipeline {
 
     stages {
 
-        stage("Code clone") {
+        stage('hey') {
             steps {
-                sh "whoami"
-                git branch: 'main',
-                    url: 'https://github.com/ADI4617/django-notes-apps.git',
-                    credentialsId: 'git-cred'
+                script {
+                    echo hey()
+                }
+            }
+        }
+
+        stage("Code Clone") {
+            steps {
+                script {
+                    clone(
+                    "https://github.com/ADI4617/django-notes-apps.git",
+                    "main"
+                )
+                }
             }
         }
 
         stage("Code Build") {
             steps {
-                sh "docker build -t notes-app:latest ."
+                script {
+                    docker_build("notes-app","latest","adijenkins")
+                }
             }
         }
 
         stage("Push to DockerHub") {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerHubCred',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker tag notes-app:latest $DOCKER_USER/notes-app:latest
-                        docker push $DOCKER_USER/notes-app:latest
-                    '''
+                script{
+                    docker_push("notes-app","latest","adijenkins")
                 }
             }
         }
@@ -41,10 +47,12 @@ pipeline {
         stage("Deploy") {
             steps {
                 sh '''
-                    docker-compose down
+                    docker-compose down || true
+                    docker rm -f $(docker ps -aq) || true
                     docker-compose up -d --build
                 '''
             }
         }
+
     }
 }
