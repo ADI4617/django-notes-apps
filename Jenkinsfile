@@ -31,7 +31,7 @@ pipeline {
         stage("Code Build") {
             steps {
                 script {
-                    docker_build("notes-app","latest","adijenkins")
+                    docker_build("notes-app","latest","adi2931")
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
         stage("Push to DockerHub") {
             steps {
                 script{
-                    docker_push("notes-app", "latest", "adijenkins")
+                    docker_push("notes-app", "latest", "adi2931")
                 }
             }
         }
